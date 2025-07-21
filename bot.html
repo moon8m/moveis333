@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>اختبار القواعد، أزمنة الأفعال، وظائف اللغة، والقراءة</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f0f0; color: #333; margin: 0; padding: 0; }
+    h1 { text-align: center; background: #0055aa; color: #fff; padding: 15px; margin: 0; }
+    .quiz-container, .menu-container, .review-container { max-width: 900px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+    .story-title { color: #0055aa; margin-top: 10px; }
+    .story { background: #f1f7ff; padding: 15px; border-radius: 8px; line-height: 1.7; margin-bottom: 20px; }
+    .question { margin-bottom: 18px; }
+    .options button {
+      display: block; width: 100%; margin: 6px 0; padding: 12px;
+      background: #f1f1f1; border: 1px solid #ccc; border-radius: 5px;
+      cursor: pointer; font-size: 16px; text-align: left;
+      transition: background 0.3s ease;
+    }
+    .options button:hover { background: #e2e2e2; }
+    .correct { background: #d4edda; border-color: #28a745; color: #155724; }
+    .wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+    .menu-container, .review-container { text-align: center; }
+    .menu-container button, .back-btn, .next-btn, .review-btn, .revisit-btn, .finish-btn {
+      padding: 10px 20px; margin: 10px; background: #0055aa; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;
+    }
+    .menu-container button:hover, .back-btn:hover, .next-btn:hover, .review-btn:hover, .revisit-btn:hover, .finish-btn:hover { background: #003f7f; }
+    .feedback { margin-top: 10px; font-style: italic; color: #555; }
+    .explanation { margin-top: 5px; font-size: 14px; color: #444; }
+    .score { font-size: 18px; font-weight: bold; text-align: center; margin-top: 20px; }
+    .review-item { margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+    .review-item p { margin: 5px 0; }
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #0055aa;
+      color: #fff;
+      font-size: 14px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+    footer a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>اختبار القواعد، أزمنة الأفعال، وظائف اللغة، والقراءة</h1>
+  <div class="menu-container" id="menu">
+    <h3>اختر فئة الاختبار</h3>
+    <button onclick="startQuiz('General Grammar')">القواعد العامة</button>
+    <button onclick="startQuiz('Verb Tenses')">أزمنة الأفعال</button>
+    <button onclick="startQuiz('Language Functions')">وظائف اللغة</button>
+    <button onclick="startQuiz('Reading Quiz')">اختبار القراءة</button>
+    <button onclick="startQuiz('English Grammar Guide')">دليل القواعد الإنجليزية</button>
+  </div>
+  <div class="quiz-container" id="quiz" style="display: none;"></div>
+  <div class="review-container" id="review" style="display: none;"></div>
+  <div id="score" class="score" style="display: none;"></div>
+  <footer>إعداد: مهند الموسوي / جامعة القادسية / كلية التربية / قسم التاريخ<br>للتواصل: <a href="https://t.me/Mohanad3iq">@Mohanad3iq</a></footer>
+  <script>
+    const storyText = `
+      <h2 class="story-title">The Mysterious House</h2>
+      <div class="story">
+        One summer, Sarah and her brother Tom went to visit their grandmother in a small village. Near her house, there was an old, abandoned house that everyone in the village said was haunted.<br><br>
+        Sarah was curious. One evening, she told Tom, “Let’s explore the house. Maybe there’s a secret inside.” At first, Tom refused, but Sarah convinced him. They waited until their grandmother fell asleep and then sneaked out.<br><br>
+        The house was dark and quiet. As they entered, the door creaked loudly. “This place gives me the creeps,” whispered Tom. Suddenly, they heard a soft noise coming from upstairs.<br><br>
+        In the dusty attic, they saw a box. Inside were old photographs and letters. One letter said:<br>
+        <em>“Dear Emma, I’ll be waiting for you here every summer. Yours forever, John.”</em><br><br>
+        Sarah realized it was not a haunted house but a place full of memories. She smiled and said, “This house isn’t scary. It’s beautiful.”<br><br>
+        The next day, they shared their discovery with their grandmother. She laughed and said, “Oh! That was your great-grandfather’s house. He built it for your great-grandmother.”<br><br>
+        From then on, Sarah and Tom visited the house every summer, not with fear but with love.
+      </div>
+    `;
+
+    const quizData = [
+      // General Grammar Questions (20 questions)
+      { category: "General Grammar", q: "1: he i intereted ___ learning Englih.", opts: ["in","at","on","for"], ans: 0, exp: "حرف الجر 'in' يُستخدم مع 'interested' للإشارة إلى الاهتمام بشيء." },
+      { category: "General Grammar", q: "2: Chooe the correct article: '___ apple'.", opts: ["a","an","the","no article"], ans: 1, exp: "نستخدم 'an' قبل الأسماء التي تبدأ بحرف متحرك (vowel sound)، مثل 'apple'." },
+      { category: "General Grammar", q: "3: Complete: 'I did the painting ___.'", opts: ["myself","me","my","mine"], ans: 0, exp: "الضمائر الانعكاسية مثل 'myself' تُستخدم للتأكيد أو مع تعابير مثل 'do something myself'." },
+      { category: "General Grammar", q: "4: Which i a imple entence?", opts: ["I saw a boy.","I saw a boy, and he was running.","Although I saw a boy, he was hiding.","I saw a boy who was running."], ans: 0, exp: "الجملة البسيطة تحتوي على فاعل وفعل ومفعول به (اختياري)، ولا تحتوي على جمل ثانوية." },
+      { category: "General Grammar", q: "5: Which noun i uncountable?", opts: ["Chair","Water","Book","Car"], ans: 1, exp: "الأسماء غير المعدودة مثل 'Water' لا تأخذ صيغة الجمع." },
+      { category: "General Grammar", q: "6: What i an abtract noun?", opts: ["Table","Happiness","Car","Apple"], ans: 1, exp: "الأسماء المجردة مثل 'Happiness' تشير إلى أفكار أو مشاعر." },
+      { category: "General Grammar", q: "7: Chooe the correct plural: 'One moue, two ___.'", opts: ["mouses","mice","mices","mouse"], ans: 1, exp: "الصيغة الجمع لـ 'mouse' هي 'mice'." },
+      { category: "General Grammar", q: "8: Which i a collective noun?", opts: ["Book","Team","Car","Apple"], ans: 1, exp: "الأسماء الجماعية مثل 'Team' تشير إلى مجموعة." },
+      { category: "General Grammar", q: "9: Chooe the correct pronoun: 'The book belong to ___.' (John)", opts: ["he","him","his","himself"], ans: 1, exp: "'him' هو ضمير المفعول به المناسب هنا." },
+      { category: "General Grammar", q: "10: What i the reflexive pronoun for 'he'?", opts: ["herself","itself","himself","themselves"], ans: 2, exp: "الضمير الانعكاسي لـ 'he' هو 'himself'." },
+      { category: "General Grammar", q: "11: Complete: 'Thi i ___ book.' (pointing to a book)", opts: ["my","your","this","mine"], ans: 2, exp: "'this' هو ضمير إشارة للإشارة إلى شيء قريب." },
+      { category: "General Grammar", q: "12: Which i a poeive pronoun?", opts: ["I","me","mine","my"], ans: 2, exp: "'mine' هو ضمير ملكية يحل محل الأسماء." },
+      { category: "General Grammar", q: "13: Complete: '___ i reading a book.' (pointing to a girl)", opts: ["She","Her","Hers","Herself"], ans: 0, exp: "'She' هو ضمير الفاعل المناسب." },
+      { category: "General Grammar", q: "14: What i the pat form of 'go'?", opts: ["Goes","Went","Gone","Going"], ans: 1, exp: "'Went' هو الماضي البسيط للفعل 'go'." },
+      { category: "General Grammar", q: "15: Chooe the correct verb: 'They ___ to chool every day.'", opts: ["go","goes","going","gone"], ans: 0, exp: "الفعل 'go' يُستخدم مع ضمير الجمع 'They'." },
+      { category: "General Grammar", q: "16: What i the pat participle of 'break'?", opts: ["Broke","Broken","Breaking","Breaks"], ans: 1, exp: "'Broken' هو الماضي التام للفعل 'break'." },
+      { category: "General Grammar", q: "17: Change to paive: 'They write letter.'", opts: ["Letters are written.","Letters were written.","Letters write.","Letters are writing."], ans: 0, exp: "في المبني للمجهول، يُستخدم 'are' مع الماضي التام." },
+      { category: "General Grammar", q: "18: What i the correct form: 'He ___ (run) now.'?", opts: ["runs","is running","ran","has run"], ans: 1, exp: "المضارع المستمر ('is running') يُستخدم للأفعال الجارية." },
+      { category: "General Grammar", q: "19: Which conjunction link a time claue? 'I found a watch ___ I wa walking.'", opts: ["while","because","although","if"], ans: 0, exp: "أدوات الربط مثل 'while' تُستخدم لربط الجمل الظرفية الدالة على الوقت." },
+      { category: "General Grammar", q: "20: Chooe the correct adverb: 'He peak ___.' (ببطء)", opts: ["slow","slowly","slower","slowest"], ans: 1, exp: "'slowly' هو الظرف الصحيح لوصف طريقة الكلام." },
+      // Verb Tenses Questions (20 questions)
+      { category: "Verb Tenses", q: "1: he ___ (read) book every day.", opts: ["reads","read","is reading","has read"], ans: 0, exp: "زمن المضارع البسيط ('reads') يُستخدم للعادات والروتين." },
+      { category: "Verb Tenses", q: "2: They ___ (play) occer yetterday.", opts: ["play","played","have played","had played"], ans: 1, exp: "زمن الماضي البسيط ('played') يُستخدم للأفعال المكتملة في الماضي." },
+      { category: "Verb Tenses", q: "3: he ___ (ing) now.", opts: ["sings","is singing","sang","has sung"], ans: 1, exp: "المضارع المستمر ('is singing') يُستخدم للأفعال الجارية الآن." },
+      { category: "Verb Tenses", q: "4: By the time we arrived, they ___ (leave).", opts: ["leave","left","had left","have left"], ans: 2, exp: "الماضي التام ('had left') يُستخدم للأفعال التي انتهت قبل حدث آخر في الماضي." },
+      { category: "Verb Tenses", q: "5: I ___ (viit) my friend tomorrow.", opts: ["visit","will visit","visiting","have visited"], ans: 1, exp: "المستقبل البسيط ('will visit') يُستخدم للأفعال التي ستحدث في المستقبل." },
+      { category: "Verb Tenses", q: "6: he ___ (tudy) Englih for three year.", opts: ["studies","is studying","has studied","has been studying"], ans: 3, exp: "المضارع التام المستمر ('has been studying') يُستخدم للأفعال المستمرة من الماضي إلى الآن." },
+      { category: "Verb Tenses", q: "7: They ___ (play) when it tarted raining.", opts: ["play","played","were playing","have played"], ans: 2, exp: "الماضي المستمر ('were playing') يُستخدم للأفعال المستمرة في وقت محدد في الماضي." },
+      { category: "Verb Tenses", q: "8: I ___ (ee) a movie lat night.", opts: ["see","saw","have seen","am seeing"], ans: 1, exp: "الماضي البسيط ('saw') يُستخدم للأفعال المكتملة في الماضي." },
+      { category: "Verb Tenses", q: "9: he ___ (work) here ince 2010.", opts: ["works","worked","has worked","is working"], ans: 2, exp: "المضارع التام ('has worked') يُستخدم للأفعال التي بدأت في الماضي ومستمرة." },
+      { category: "Verb Tenses", q: "10: We ___ (go) to the park tomorrow.", opts: ["go","will go","going","have gone"], ans: 1, exp: "المستقبل البسيط ('will go') يُستخدم للأفعال المستقبلية." },
+      { category: "Verb Tenses", q: "11: he ___ (read) when I called her.", opts: ["reads","read","was reading","has read"], ans: 2, exp: "الماضي المستمر ('was reading') يُستخدم للأفعال المستمرة في الماضي." },
+      { category: "Verb Tenses", q: "12: By next month, I ___ (finih) the project.", opts: ["finish","will finish","have finished","will have finished"], ans: 3, exp: "المستقبل التام ('will have finished') يُستخدم للأفعال المكتملة بحلول وقت مستقبلي." },
+      { category: "Verb Tenses", q: "13: They ___ (not ee) the movie yet.", opts: ["don’t see","didn’t see","haven’t seen","aren’t seeing"], ans: 2, exp: "المضارع التام ('haven’t seen') يُستخدم للأفعال التي لم تحدث حتى الآن." },
+      { category: "Verb Tenses", q: "14: I ___ (live) in Riyadh when I wa young.", opts: ["live","lived","have lived","am living"], ans: 1, exp: "الماضي البسيط ('lived') يُستخدم للأفعال المكتملة في الماضي." },
+      { category: "Verb Tenses", q: "15: he ___ (tudy) now.", opts: ["studies","is studying","studied","has studied"], ans: 1, exp: "المضارع المستمر ('is studying') يُستخدم للأفعال الجارية الآن." },
+      { category: "Verb Tenses", q: "16: We ___ (viit) London three time.", opts: ["visit","visited","have visited","are visiting"], ans: 2, exp: "المضارع التام ('have visited') يُستخدم للأفعال المتكررة في الماضي." },
+      { category: "Verb Tenses", q: "17: he ___ (not finihed) her homework yet.", opts: ["doesn’t finish","didn’t finish","hasn’t finished","isn’t finishing"], ans: 2, exp: "المضارع التام ('hasn’t finished') يُستخدم للأفعال غير المكتملة حتى الآن." },
+      { category: "Verb Tenses", q: "18: They ___ (play) football when it tarted to rain.", opts: ["play","played","were playing","have played"], ans: 2, exp: "الماضي المستمر ('were playing') يُستخدم للأفعال المستمرة في الماضي." },
+      { category: "Verb Tenses", q: "19: I ___ (buy) a new car next week.", opts: ["buy","will buy","buying","have bought"], ans: 1, exp: "المستقبل البسيط ('will buy') يُستخدم للأفعال المستقبلية." },
+      { category: "Verb Tenses", q: "20: he ___ (work) here for five year.", opts: ["works","worked","has worked","is working"], ans: 2, exp: "المضارع التام ('has worked') يُستخدم للأفعال المستمرة من الماضي." },
+      // Language Functions Questions (20 questions)
+      { category: "Language Functions", q: "1: You meet your teacher in the morning. What do you ay?", opts: ["Good night","Good morning","Good afternoon","Hello"], ans: 1, exp: "عند التحية في الصباح، نقول 'Good morning'." },
+      { category: "Language Functions", q: "2: 'Would you like me to call a taxi?' how:", opts: ["Offering help","Making a suggestion","Giving advice","Requesting"], ans: 0, exp: "'Would you like me to call a taxi?' هو عرض مساعدة (Offering help)." },
+      { category: "Language Functions", q: "3: How do you ak for direction?", opts: ["Can I help you?","Where is the station?","What time is it?","Can you call a taxi?"], ans: 1, exp: "السؤال عن الاتجاهات يستخدم صيغة مثل 'Where is...?'." },
+      { category: "Language Functions", q: "4: What do you ay to expre gratitude?", opts: ["Sorry","Thank you","Excuse me","Hello"], ans: 1, exp: "'Thank you' تُستخدم للتعبير عن الامتنان." },
+      { category: "Language Functions", q: "5: How do you make a polite requet?", opts: ["Give me water.","Can you give me water?","I want water.","Water, please."], ans: 1, exp: "الطلب المهذب يستخدم 'Can you...' أو 'Could you...'." },
+      { category: "Language Functions", q: "6: What do you ay when you bump into omeone?", opts: ["Thank you","Sorry","Hello","Good bye"], ans: 1, exp: "'Sorry' تُستخدم للاعتذار عن الخطأ." },
+      { category: "Language Functions", q: "7: How do you introduce yourelf?", opts: ["My name is Ali.","Where are you from?","What time is it?","Can I help you?"], ans: 0, exp: "'My name is...' تُستخدم للتعريف بالنفس." },
+      { category: "Language Functions", q: "8: What do you ay to offer a eat?", opts: ["Take a seat.","Stand up.","Go away.","Thank you."], ans: 0, exp: "'Take a seat' هو عرض للجلوس." },
+      { category: "Language Functions", q: "9: How do you ak for the time?", opts: ["What time is it?","Where is the clock?","Can you wait?","What’s your name?"], ans: 0, exp: "'What time is it?' يُستخدم للسؤال عن الوقت." },
+      { category: "Language Functions", q: "10: What do you ay to give advice?", opts: ["You should study.","Can you study?","Study now!","Where do you study?"], ans: 0, exp: "'You should...' تُستخدم لتقديم النصيحة." },
+      { category: "Language Functions", q: "11: How do you repond to 'Thank you'?", opts: ["Sorry","You’re welcome","Hello","Good bye"], ans: 1, exp: "'You’re welcome' هي الرد المناسب على 'Thank you'." },
+      { category: "Language Functions", q: "12: What do you ay to ak for permiion?", opts: ["Can I use your phone?","Give me your phone.","Where is your phone?","I need your phone."], ans: 0, exp: "'Can I...' تُستخدم للطلب المهذب للإذن." },
+      { category: "Language Functions", q: "13: How do you expre diagreement?", opts: ["I agree.","I don’t think so.","That’s right.","Good idea."], ans: 1, exp: "'I don’t think so' تُستخدم للتعبير عن الاختلاف." },
+      { category: "Language Functions", q: "14: What do you ay to congratulate omeone?", opts: ["Sorry","Well done!","Can you help me?","What’s wrong?"], ans: 1, exp: "'Well done!' تُستخدم للتهنئة." },
+      { category: "Language Functions", q: "15: How do you ak for clarification?", opts: ["Can you repeat that?","Thank you.","I agree.","Good bye."], ans: 0, exp: "'Can you repeat that?' تُستخدم للسؤال عن التوضيح." },
+      { category: "Language Functions", q: "16: What do you ay to invite omeone?", opts: ["Come to my party.","Go away.","Where are you?","I’m busy."], ans: 0, exp: "'Come to...' تُستخدم لدعوة شخص." },
+      { category: "Language Functions", q: "17: How do you decline an invitation politely?", opts: ["No, thanks.","Go away.","I want to come.","Yes, please."], ans: 0, exp: "'No, thanks' هي طريقة مهذبة لرفض الدعوة." },
+      { category: "Language Functions", q: "18: What do you ay to expre urprie?", opts: ["That’s amazing!","Thank you.","Sorry.","I agree."], ans: 0, exp: "'That’s amazing!' تُستخدم للتعبير عن المفاجأة." },
+      { category: "Language Functions", q: "19: How do you ak for help?", opts: ["Can you help me?","I’m fine.","Go away.","Thank you."], ans: 0, exp: "'Can you help me?' تُستخدم لطلب المساعدة." },
+      { category: "Language Functions", q: "20: What do you ay to expre agreement?", opts: ["I don’t think so.","I agree.","No way.","Maybe."], ans: 1, exp: "'I agree' تُستخدم للتعبير عن الموافقة." },
+      // Reading Quiz Questions (20 questions)
+      { category: "Reading Quiz", q: "1: Why did arah and Tom go to the old houe?", opts: ["To find treasure","To explore it out of curiosity","To meet their friends","To escape from home"], ans: 1, exp: "القصة تقول إن سارة كانت فضولية لاستكشاف البيت." },
+      { category: "Reading Quiz", q: "2: What did they hear inide the houe?", opts: ["A loud scream","A soft noise from upstairs","Someone calling their names","The sound of music"], ans: 1, exp: "القصة ذكرت أنهما سمعا صوتًا خفيفًا من الطابق العلوي." },
+      { category: "Reading Quiz", q: "3: What wa inide the box in the attic?", opts: ["Gold and jewels","Old photographs and letters","A treasure map","A diary and key"], ans: 1, exp: "القصة ذكرت أن الصندوق يحتوي على صور قديمة ورسائل." },
+      { category: "Reading Quiz", q: "4: Who built the houe?", opts: ["Their great-grandfather","A stranger","Their uncle","Nobody knows"], ans: 0, exp: "الجدة قالت إن الجد الأكبر بنى البيت." },
+      { category: "Reading Quiz", q: "5: How did arah and Tom feel about the houe at the end?", opts: ["They were still scared","They hated it","They loved it and visited every summer","They wanted to sell it"], ans: 2, exp: "في النهاية، زارا سارة وتوم البيت كل صيف بحب." },
+      { category: "Reading Quiz", q: "6: When did arah and Tom viit the houe?", opts: ["In the afternoon","In the morning","At night","During lunch"], ans: 2, exp: "القصة تقول إنهما تسللا ليلاً بعد أن نامت الجدة." },
+      { category: "Reading Quiz", q: "7: Why did Tom heitate to go to the houe?", opts: ["He was afraid","He was tired","He didn’t like adventures","He thought it was too far"], ans: 0, exp: "توم قال إن المكان مخيف، مما يدل على خوفه." },
+      { category: "Reading Quiz", q: "8: What did arah ay about the houe at the end?", opts: ["“It’s haunted.”","“It’s very scary.”","“This house isn’t scary. It’s beautiful.”","“Let’s never come back.”"], ans: 2, exp: "سارة قالت: 'This house isn’t scary. It’s beautiful' بعد اكتشاف الذكريات." },
+      { category: "Reading Quiz", q: "9: What leon did the tory teach?", opts: ["Don’t visit old houses","Sometimes places have memories, not ghosts","Never listen to your sister","Always ask for permission"], ans: 1, exp: "القصة علمتهما أن الأماكن قد تحمل ذكريات، وليس أشباحًا." },
+      { category: "Reading Quiz", q: "10: What did the grandmother ay about the houe?", opts: ["“It’s dangerous.”","“That was your great-grandfather’s house.”","“Never go there again.”","“It’s full of ghosts.”"], ans: 1, exp: "الجدة قالت إن البيت كان للجد الأكبر." },
+      { category: "Reading Quiz", q: "11: Where wa the old houe located?", opts: ["In the city","Near the grandmother’s house","In a forest","By the sea"], ans: 1, exp: "القصة ذكرت أن البيت كان بالقرب من منزل الجدة." },
+      { category: "Reading Quiz", q: "12: Who wa curiou about the houe?", opts: ["Tom","Sarah","The grandmother","John"], ans: 1, exp: "القصة تقول إن سارة كانت فضولية." },
+      { category: "Reading Quiz", q: "13: What time did arah and Tom enter the houe?", opts: ["Morning","Afternoon","Evening","Midnight"], ans: 2, exp: "القصة ذكرت أنهما دخلا البيت مساءً." },
+      { category: "Reading Quiz", q: "14: What made the door creak?", opts: ["Opening it","Breaking it","Wind","A ghost"], ans: 0, exp: "القصة ذكرت أن الباب صدر صوتًا عند فتحه." },
+      { category: "Reading Quiz", q: "15: Where did they find the box?", opts: ["In the basement","In the attic","In the kitchen","In the garden"], ans: 1, exp: "القصة ذكرت أن الصندوق كان في العلية." },
+      { category: "Reading Quiz", q: "16: What doe 'creaked' mean in 'the door creaked loudly'?", opts: ["Opened silently","Made a noise","Closed tightly","Broke"], ans: 1, exp: "'Creaked' تعني صرير أو إصدار صوت عالٍ." },
+      { category: "Reading Quiz", q: "17: What i the meaning of 'abandoned' in the tory?", opts: ["New","Haunted","Deserted","Beautiful"], ans: 2, exp: "'Abandoned' تعني مهجور أو متروك." },
+      { category: "Reading Quiz", q: "18: What doe 'curiou' mean in 'arah wa curiou'?", opts: ["Angry","Eager to know","Tired","Sad"], ans: 1, exp: "'Curious' تعني فضولي أو راغب في المعرفة." },
+      { category: "Reading Quiz", q: "19: What doe 'whipered' in 'Tom whipered' mean?", opts: ["Shouted","Spoke softly","Sang","Cried"], ans: 1, exp: "'Whispered' تعني تكلم بهدوء أو همس." },
+      { category: "Reading Quiz", q: "20: What i the main theme of the tory?", opts: ["Fear of ghosts","Discovering family history","Adventure in a village","Finding treasure"], ans: 1, exp: "القصة تركز على اكتشاف ذكريات العائلة." },
+      // English Grammar Guide Questions (20 questions)
+      { category: "English Grammar Guide", q: "1: Which of thee i a countable noun?", opts: ["Water","Book","Coffee","Rice"], ans: 1, exp: "الأسماء المعدودة لها صيغة مفرد وجمع، مثل 'Book' (Books). 'Water' و'Coffee' و'Rice' هي أسماء غير معدودة." },
+      { category: "English Grammar Guide", q: "2: Chooe the correct article: '___ apple'.", opts: ["a","an","the","no article"], ans: 1, exp: "نستخدم 'an' قبل الأسماء التي تبدأ بحرف متحرك (vowel sound)، مثل 'apple'." },
+      { category: "English Grammar Guide", q: "3: Complete: 'I did the painting ___.'", opts: ["myself","me","my","mine"], ans: 0, exp: "الضمائر الانعكاسية مثل 'myself' تُستخدم للتأكيد أو مع تعابير مثل 'do something myself'." },
+      { category: "English Grammar Guide", q: "4: Which i a imple entence?", opts: ["I saw a boy.","I saw a boy, and he was running.","Although I saw a boy, he was hiding.","I saw a boy who was running."], ans: 0, exp: "الجملة البسيطة تحتوي على فاعل وفعل ومفعول به (اختياري)، ولا تحتوي على جمل ثانوية." },
+      { category: "English Grammar Guide", q: "5: Which i an auxiliary verb in 'I hould know the way'?", opts: ["know","should","way","I"], ans: 1, exp: "الأفعال المساعدة مثل 'should' تُستخدم مع الفعل الرئيسي للتعبير عن الإلزام أو الاحتمال." },
+      { category: "English Grammar Guide", q: "6: Chooe the correct tene: 'I ___ in Riyadh for ix year.'", opts: ["live","am living","have lived","lived"], ans: 2, exp: "المضارع التام ('have lived') يُستخدم للتعبير عن فعل بدأ في الماضي ومستمر حتى الآن." },
+      { category: "English Grammar Guide", q: "7: How i the adverb formed from 'careful'?", opts: ["care","carefully","carefuly","carefull"], ans: 1, exp: "معظم الظروف تُشكّل بإضافة 'ly' إلى الصفة، مثل 'careful' تصبح 'carefully'." },
+      { category: "English Grammar Guide", q: "8: Change to paive: 'Ahmed broke the window.'", opts: ["The window is broken by Ahmed.","The window was broken by Ahmed.","The window breaks Ahmed.","Ahmed was broken by the window."], ans: 1, exp: "في المبني للمجهول، يصبح المفعول به فاعلاً، ويُستخدم 'was' مع الفعل في صيغة الماضي التام." },
+      { category: "English Grammar Guide", q: "9: Which conjunction link a time claue? 'I found a watch ___ I wa walking.'", opts: ["while","because","although","if"], ans: 0, exp: "أدوات الربط مثل 'while' تُستخدم لربط الجمل الظرفية الدالة على الوقت." },
+      { category: "English Grammar Guide", q: "10: Complete: 'You don’t come from audi Arabia, ___?'", opts: ["do you","don’t you","are you","aren’t you"], ans: 0, exp: "الأسئلة المذيلة تستخدم الفعل المساعد 'do' مع النفي في الجملة الإيجابية، لذا 'don’t' يقابل 'do you'." },
+      { category: "English Grammar Guide", q: "11: Which noun i uncountable?", opts: ["Chair","Water","Book","Car"], ans: 1, exp: "الأسماء غير المعدودة مثل 'Water' لا تأخذ صيغة الجمع." },
+      { category: "English Grammar Guide", q: "12: What i an abtract noun?", opts: ["Table","Happiness","Car","Apple"], ans: 1, exp: "الأسماء المجردة مثل 'Happiness' تشير إلى أفكار أو مشاعر." },
+      { category: "English Grammar Guide", q: "13: Chooe the correct plural: 'One moue, two ___.'", opts: ["mouses","mice","mices","mouse"], ans: 1, exp: "الصيغة الجمع لـ 'mouse' هي 'mice'." },
+      { category: "English Grammar Guide", q: "14: Which i a collective noun?", opts: ["Book","Team","Car","Apple"], ans: 1, exp: "الأسماء الجماعية مثل 'Team' تشير إلى مجموعة." },
+      { category: "English Grammar Guide", q: "15: Chooe the correct pronoun: 'The book belong to ___.' (John)", opts: ["he","him","his","himself"], ans: 1, exp: "'him' هو ضمير المفعول به المناسب هنا." },
+      { category: "English Grammar Guide", q: "16: What i the reflexive pronoun for 'he'?", opts: ["herself","itself","himself","themselves"], ans: 2, exp: "الضمير الانعكاسي لـ 'he' هو 'himself'." },
+      { category: "English Grammar Guide", q: "17: Complete: 'Thi i ___ book.' (pointing to a book)", opts: ["my","your","this","mine"], ans: 2, exp: "'this' هو ضمير إشارة للإشارة إلى شيء قريب." },
+      { category: "English Grammar Guide", q: "18: Which i a poeive pronoun?", opts: ["I","me","mine","my"], ans: 2, exp: "'mine' هو ضمير ملكية يحل محل الأسماء." },
+      { category: "English Grammar Guide", q: "19: Complete: '___ i reading a book.' (pointing to a girl)", opts: ["She","Her","Hers","Herself"], ans: 0, exp: "'She' هو ضمير الفاعل المناسب." },
+      { category: "English Grammar Guide", q: "20: What i the pat form of 'go'?", opts: ["Goes","Went","Gone","Going"], ans: 1, exp: "'Went' هو الماضي البسيط للفعل 'go'." }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let selectedCategory = "";
+    let filteredQuestions = [];
+    let userAnswers = [];
+    const quizContainer = document.getElementById("quiz");
+    const menuContainer = document.getElementById("menu");
+    const reviewContainer = document.getElementById("review");
+    const scoreContainer = document.getElementById("score");
+
+    function showMenu() {
+      menuContainer.style.display = "block";
+      quizContainer.style.display = "none";
+      reviewContainer.style.display = "none";
+      scoreContainer.style.display = "none";
+    }
+
+    function startQuiz(category) {
+      selectedCategory = category;
+      filteredQuestions = quizData.filter(item => item.category === category);
+      userAnswers = Array(filteredQuestions.length).fill(null);
+      currentQuestion = 0;
+      score = 0;
+      menuContainer.style.display = "none";
+      quizContainer.style.display = "block";
+      reviewContainer.style.display = "none";
+      scoreContainer.style.display = "none";
+      showQuestion();
+    }
+
+    function showQuestion() {
+      quizContainer.innerHTML = ""; // Clear previous content
+
+      if (selectedCategory === "Reading Quiz") {
+        // Display story and all questions for Reading Quiz
+        quizContainer.innerHTML = storyText;
+
+        filteredQuestions.forEach((item, index) => {
+          const divQ = document.createElement("div");
+          divQ.className = "question";
+          const h3 = document.createElement("h3");
+          h3.innerText = `${index + 1}: ${item.q}`; // Show question number without 'س'
+          divQ.appendChild(h3);
+
+          const optsDiv = document.createElement("div");
+          optsDiv.className = "options";
+
+          item.opts.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.innerText = opt;
+            btn.disabled = userAnswers[index] !== null;
+            if (userAnswers[index] === i) {
+              btn.classList.add(i === item.ans ? "correct" : "wrong");
+            }
+            btn.onclick = () => {
+              if (userAnswers[index] !== null) return;
+              userAnswers[index] = i;
+              const feedback = document.createElement("p");
+              feedback.className = "feedback";
+              feedback.innerText = `الإجابة الصحيحة: ${item.opts[item.ans]}`;
+              const explanation = document.createElement("p");
+              explanation.className = "explanation";
+              if (i === item.ans) {
+                btn.classList.add("correct");
+                score++;
+                explanation.innerText = item.exp;
+              } else {
+                btn.classList.add("wrong");
+                explanation.innerText = `غير صحيح. ${item.exp}`;
+              }
+              [...optsDiv.children].forEach(b => b.disabled = true);
+              divQ.appendChild(feedback);
+              divQ.appendChild(explanation);
+            };
+            optsDiv.appendChild(btn);
+          });
+
+          if (userAnswers[index] !== null) {
+            const feedback = document.createElement("p");
+            feedback.className = "feedback";
+            feedback.innerText = `الإجابة الصحيحة: ${item.opts[item.ans]}`;
+            const explanation = document.createElement("p");
+            explanation.className = "explanation";
+            explanation.innerText = userAnswers[index] === item.ans ? item.exp : `غير صحيح. ${item.exp}`;
+            divQ.appendChild(feedback);
+            divQ.appendChild(explanation);
+          }
+
+          divQ.appendChild(optsDiv);
+          quizContainer.appendChild(divQ);
+        });
+
+        // Add navigation buttons
+        const navDiv = document.createElement("div");
+        navDiv.className = "navigation";
+
+        const backBtn = document.createElement("button");
+        backBtn.className = "back-btn";
+        backBtn.innerText = "العودة إلى القائمة";
+        backBtn.onclick = showMenu;
+        navDiv.appendChild(backBtn);
+
+        const reviewBtn = document.createElement("button");
+        reviewBtn.className = "review-btn";
+        reviewBtn.innerText = "عرض قائمة الأسئلة";
+        reviewBtn.onclick = showReviewList;
+        navDiv.appendChild(reviewBtn);
+
+        const finishBtn = document.createElement("button");
+        finishBtn.className = "finish-btn";
+        finishBtn.innerText = "إنهاء الاختبار";
+        finishBtn.onclick = showScore;
+        navDiv.appendChild(finishBtn);
+
+        quizContainer.appendChild(navDiv);
+      } else {
+        // Display one question at a time for other categories
+        const item = filteredQuestions[currentQuestion];
+        const divQ = document.createElement("div");
+        divQ.className = "question";
+        const h3 = document.createElement("h3");
+        h3.innerText = `${currentQuestion + 1}: ${item.q}`; // Show question number without 'س'
+        divQ.appendChild(h3);
+
+        const optsDiv = document.createElement("div");
+        optsDiv.className = "options";
+
+        item.opts.forEach((opt, i) => {
+          const btn = document.createElement("button");
+          btn.innerText = opt;
+          btn.disabled = userAnswers[currentQuestion] !== null;
+          if (userAnswers[currentQuestion] === i) {
+            btn.classList.add(i === item.ans ? "correct" : "wrong");
+          }
+          btn.onclick = () => {
+            if (userAnswers[currentQuestion] !== null) return;
+            userAnswers[currentQuestion] = i;
+            const feedback = document.createElement("p");
+            feedback.className = "feedback";
+            feedback.innerText = `الإجابة الصحيحة: ${item.opts[item.ans]}`;
+            const explanation = document.createElement("p");
+            explanation.className = "explanation";
+            if (i === item.ans) {
+              btn.classList.add("correct");
+              score++;
+              explanation.innerText = item.exp;
+            } else {
+              btn.classList.add("wrong");
+              explanation.innerText = `غير صحيح. ${item.exp}`;
+            }
+            [...optsDiv.children].forEach(b => b.disabled = true);
+            divQ.appendChild(feedback);
+            divQ.appendChild(explanation);
+            showNavigation();
+          };
+          optsDiv.appendChild(btn);
+        });
+
+        if (userAnswers[currentQuestion] !== null) {
+          const feedback = document.createElement("p");
+          feedback.className = "feedback";
+          feedback.innerText = `الإجابة الصحيحة: ${item.opts[item.ans]}`;
+          const explanation = document.createElement("p");
+          explanation.className = "explanation";
+          explanation.innerText = userAnswers[currentQuestion] === item.ans ? item.exp : `غير صحيح. ${item.exp}`;
+          divQ.appendChild(feedback);
+          divQ.appendChild(explanation);
+        }
+
+        divQ.appendChild(optsDiv);
+        quizContainer.appendChild(divQ);
+        showNavigation();
+      }
+    }
+
+    function showNavigation() {
+      if (selectedCategory === "Reading Quiz") return; // Navigation handled in showQuestion for Reading Quiz
+
+      const navDiv = document.createElement("div");
+      navDiv.className = "navigation";
+
+      const backBtn = document.createElement("button");
+      backBtn.className = "back-btn";
+      backBtn.innerText = "العودة إلى القائمة";
+      backBtn.onclick = showMenu;
+      navDiv.appendChild(backBtn);
+
+      const reviewBtn = document.createElement("button");
+      reviewBtn.className = "review-btn";
+      reviewBtn.innerText = "عرض قائمة الأسئلة";
+      reviewBtn.onclick = showReviewList;
+      navDiv.appendChild(reviewBtn);
+
+      if (currentQuestion < filteredQuestions.length - 1) {
+        const nextBtn = document.createElement("button");
+        nextBtn.className = "next-btn";
+        nextBtn.innerText = "السؤال التالي";
+        nextBtn.onclick = () => {
+          currentQuestion++;
+          showQuestion();
+        };
+        navDiv.appendChild(nextBtn);
+      } else {
+        const finishBtn = document.createElement("button");
+        finishBtn.className = "finish-btn";
+        finishBtn.innerText = "إنهاء الاختبار";
+        finishBtn.onclick = showScore;
+        navDiv.appendChild(finishBtn);
+      }
+
+      quizContainer.appendChild(navDiv);
+    }
+
+    function showReviewList() {
+      quizContainer.style.display = "none";
+      reviewContainer.style.display = "block";
+      scoreContainer.style.display = "none";
+      reviewContainer.innerHTML = ""; // Clear previous content
+
+      if (selectedCategory === "Reading Quiz") {
+        reviewContainer.innerHTML = storyText; // Show story in review list
+      }
+
+      const title = document.createElement("h3");
+      title.innerText = "قائمة الأسئلة";
+      reviewContainer.appendChild(title);
+
+      filteredQuestions.forEach((item, index) => {
+        const reviewItem = document.createElement("div");
+        reviewItem.className = "review-item";
+        const qText = document.createElement("p");
+        qText.innerText = `${index + 1}: ${item.q}`; // Show question number without 'س'
+        reviewItem.appendChild(qText);
+
+        const status = document.createElement("p");
+        status.innerText = userAnswers[index] === null ? "لم يتم الإجابة" : `إجابتك: ${item.opts[userAnswers[index]]}`;
+        reviewItem.appendChild(status);
+
+        const correctAns = document.createElement("p");
+        correctAns.innerText = `الإجابة الصحيحة: ${item.opts[item.ans]}`;
+        reviewItem.appendChild(correctAns);
+
+        const explanation = document.createElement("p");
+        explanation.className = "explanation";
+        explanation.innerText = userAnswers[index] === item.ans ? item.exp : `غير صحيح. ${item.exp}`;
+        reviewItem.appendChild(explanation);
+
+        reviewContainer.appendChild(reviewItem);
+      });
+
+      const navDiv = document.createElement("div");
+      navDiv.className = "navigation";
+
+      const backBtn = document.createElement("button");
+      backBtn.className = "back-btn";
+      backBtn.innerText = "العودة إلى القائمة";
+      backBtn.onclick = showMenu;
+      navDiv.appendChild(backBtn);
+
+      const revisitBtn = document.createElement("button");
+      revisitBtn.className = "revisit-btn";
+      revisitBtn.innerText = "إعادة زيارة الأسئلة";
+      revisitBtn.onclick = () => {
+        quizContainer.style.display = "block";
+        reviewContainer.style.display = "none";
+        showQuestion();
+      };
+      navDiv.appendChild(revisitBtn);
+
+      const finishBtn = document.createElement("button");
+      finishBtn.className = "finish-btn";
+      finishBtn.innerText = "إنهاء الاختبار";
+      finishBtn.onclick = showScore;
+      navDiv.appendChild(finishBtn);
+
+      reviewContainer.appendChild(navDiv);
+    }
+
+    function showScore() {
+      quizContainer.style.display = "none";
+      reviewContainer.style.display = "none";
+      scoreContainer.style.display = "block";
+      scoreContainer.innerHTML = `نقاطك: ${score} من ${filteredQuestions.length}<br>`;
+
+      const navDiv = document.createElement("div");
+      navDiv.className = "navigation";
+
+      const restartBtn = document.createElement("button");
+      restartBtn.className = "restart-btn";
+      restartBtn.innerText = "إعادة الاختبار";
+      restartBtn.onclick = () => startQuiz(selectedCategory);
+      navDiv.appendChild(restartBtn);
+
+      const reviewBtn = document.createElement("button");
+      reviewBtn.className = "review-btn";
+      reviewBtn.innerText = "عرض قائمة الأسئلة";
+      reviewBtn.onclick = showReviewList;
+      navDiv.appendChild(reviewBtn);
+
+      const backBtn = document.createElement("button");
+      backBtn.className = "back-btn";
+      backBtn.innerText = "العودة إلى القائمة";
+      backBtn.onclick = showMenu;
+      navDiv.appendChild(backBtn);
+
+      scoreContainer.appendChild(navDiv);
+    }
+
+    showMenu();
+  </script>
+</body>
+</html>
